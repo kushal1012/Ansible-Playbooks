@@ -1,0 +1,43 @@
+- name: script-windows-patches.yml
+  hosts: windows
+
+  vars:
+    categories:
+      - CriticalUpdates
+      - SecurityUpdates
+      - ServicePacks
+      - UpdateRollups
+      - Updates
+    log_path: C:\logrhythm\window_update.txt
+
+  tasks:
+
+    - name: enable windows update service
+      win_service:
+        name: wuauserv
+        start_mode: auto
+        state: started
+
+    - name: search for updates
+      win_updates:
+        category_names: '{{ categories }}'
+        state: searched
+        log_path: C:\logrhythm\window_update.txt
+      register: available_updates
+
+    - name: list available updates
+      debug:
+        msg: "{{ available_updates }}"
+      changed_when: true
+
+    - name: install all available updates
+      win_updates:
+        category_names: '{{ categories }}'
+        log_path: '{{ log_path }}'
+      register: update_results
+      failed_when: false
+
+    - name: windows update results (reboots may be required!)
+      debug:
+        msg: '{{ update_results }}'
+      changed_when: true
