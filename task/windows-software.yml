@@ -3,4 +3,4 @@
     path: "{{ __common_packages_windows['softwarename'].installer | replace('/', __backslash) }}"
     creates_path: "{{ __common_packages_windows['softwarename'].path }}"
     state: present
-  when: "'pm' in __my_system_host.roles"
+  when: "'hostname' in __my_system_host.roles"
